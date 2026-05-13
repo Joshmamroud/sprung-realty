@@ -1,0 +1,46 @@
+{
+  "name": "matts-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "smoke": "tsx --conditions=react-server --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/zoho-smoke.ts",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@payloadcms/db-postgres": "^3.84.1",
+    "@payloadcms/next": "^3.84.1",
+    "@payloadcms/richtext-lexical": "^3.84.1",
+    "@payloadcms/storage-vercel-blob": "^3.84.1",
+    "@payloadcms/ui": "^3.84.1",
+    "@zohocrm/typescript-sdk-8.0": "^3.0.0",
+    "clsx": "^2.1.1",
+    "graphql": "^16.14.0",
+    "lucide-react": "^1.14.0",
+    "next": "16.2.5",
+    "payload": "^3.84.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.75.0",
+    "server-only": "^0.0.1",
+    "sharp": "^0.34.5",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}
