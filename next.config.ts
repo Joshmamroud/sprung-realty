@@ -4,10 +4,7 @@ import { withPayload } from "@payloadcms/next/withPayload";
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@zohocrm/typescript-sdk-8.0"],
   outputFileTracingIncludes: {
-    "/**/*": [
-      "./node_modules/@zohocrm/typescript-sdk-8.0/dist/**/*.json",
-      "./node_modules/.pnpm/@zohocrm+typescript-sdk-8.0@*/node_modules/@zohocrm/typescript-sdk-8.0/dist/**/*.json",
-    ],
+    "/**/*": ["./node_modules/@zohocrm/typescript-sdk-8.0/dist/**/*.json"],
   },
   images: {
     remotePatterns: [
