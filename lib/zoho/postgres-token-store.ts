@@ -1,6 +1,6 @@
 import "server-only";
 import { Pool } from "pg";
-import type { OAuthToken } from "@zohocrm/typescript-sdk-8.0/dist/models/authenticator/oauth_token";
+import { OAuthToken } from "@zohocrm/typescript-sdk-8.0/dist/models/authenticator/oauth_token";
 import type { Token } from "@zohocrm/typescript-sdk-8.0/dist/models/authenticator/token";
 import type { TokenStore } from "@zohocrm/typescript-sdk-8.0/dist/models/authenticator/store/token_store";
 
@@ -125,14 +125,26 @@ export class PostgresTokenStore implements TokenStore {
 
   async findTokenById(id: string): Promise<Token | null> {
     await this.ready;
-    const { rows } = await this.pool.query(
+    const { rows } = await this.pool.query<Record<string, string | null>>(
       "SELECT * FROM zoho_tokens WHERE id = $1 LIMIT 1",
       [id],
     );
     if (!rows.length) return null;
-    // SDK consumes the row via setMergeData-style flow on next findToken; here we
-    // just signal presence by returning a sentinel non-null value.
-    return rows[0] as unknown as Token;
+
+    const row = rows[0];
+    const oauth = new OAuthToken(
+      row.client_id ?? null,
+      row.client_secret ?? null,
+      row.grant_token ?? null,
+      row.refresh_token ?? null,
+      row.redirect_url ?? null,
+      row.id ?? null,
+      row.access_token ?? null,
+      null,
+    );
+    if (row.expiry_time) oauth.setExpiresIn(row.expiry_time);
+    if (row.api_domain) oauth.setAPIDomain(row.api_domain);
+    return oauth;
   }
 
   async saveToken(token: Token): Promise<void> {
