@@ -1,5 +1,7 @@
 import "server-only";
 import * as ZOHOCRMSDK from "@zohocrm/typescript-sdk-8.0";
+import type { TokenStore } from "@zohocrm/typescript-sdk-8.0/dist/models/authenticator/store/token_store";
+import { PostgresTokenStore } from "./postgres-token-store";
 
 let initPromise: Promise<void> | null = null;
 
@@ -42,8 +44,12 @@ export async function initZoho(): Promise<void> {
         .refreshToken(requireEnv("ZOHO_REFRESH_TOKEN"))
         .build();
 
-      const tokenStorePath = process.env.ZOHO_TOKEN_STORE_PATH ?? "./.zoho-tokens.csv";
-      const store = new ZOHOCRMSDK.FileStore(tokenStorePath);
+      const dbUrl = process.env.DATABASE_URL ?? process.env.DATABASE_URI;
+      const store: TokenStore = dbUrl
+        ? new PostgresTokenStore(dbUrl)
+        : new ZOHOCRMSDK.FileStore(
+            process.env.ZOHO_TOKEN_STORE_PATH ?? "/tmp/.zoho-tokens.csv",
+          );
 
       const sdkConfig = new ZOHOCRMSDK.SDKConfigBuilder()
         .pickListValidation(false)
