@@ -56,9 +56,42 @@ export async function GET() {
     parsed = JSON.parse(text);
   } catch {}
 
+  if (res.status !== 200 || !parsed || typeof (parsed as { access_token?: string }).access_token !== "string") {
+    return NextResponse.json({
+      env,
+      zohoStatus: res.status,
+      zohoResponse: parsed ?? text,
+    });
+  }
+
+  const access = (parsed as { access_token: string }).access_token;
+  const apiDomain =
+    (parsed as { api_domain?: string }).api_domain ?? "https://www.zohoapis.com";
+
+  const coqlBody = JSON.stringify({
+    select_query:
+      "SELECT id, Deal_Name, Publish_Webpage FROM Deals WHERE Publish_Webpage = true LIMIT 1",
+  });
+
+  const coqlRes = await fetch(`${apiDomain}/crm/v8/coql`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Zoho-oauthtoken ${access}`,
+    },
+    body: coqlBody,
+  });
+  const coqlText = await coqlRes.text();
+  let coqlParsed: unknown = null;
+  try {
+    coqlParsed = JSON.parse(coqlText);
+  } catch {}
+
   return NextResponse.json({
     env,
     zohoStatus: res.status,
-    zohoResponse: parsed ?? text,
+    accessTokenPrefix: access.slice(0, 16),
+    coqlStatus: coqlRes.status,
+    coqlResponse: coqlParsed ?? coqlText,
   });
 }
