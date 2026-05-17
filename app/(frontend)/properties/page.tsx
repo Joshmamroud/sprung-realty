@@ -50,6 +50,7 @@ export default async function PropertiesPage() {
   try {
     listings = await listPublicDeals();
   } catch (err) {
+    console.error("[/properties] listPublicDeals failed:", err);
     zohoError = err instanceof Error ? err.message : "Could not load listings.";
   }
 
@@ -58,7 +59,8 @@ export default async function PropertiesPage() {
       try {
         const photos = await listListingPhotos(l.id);
         return [l.id, photos[0]?.fileId ?? null] as const;
-      } catch {
+      } catch (err) {
+        console.error(`[/properties] listListingPhotos(${l.id}) failed:`, err);
         return [l.id, null] as const;
       }
     }),
